@@ -25,6 +25,8 @@ type pointsWriter interface {
 type StatementExecutor struct {
 	MetaClient MetaClient
 
+	TaskManager influxql.StatementExecutor
+
 	// TSDB storage for local node.
 	TSDBStore TSDBStore
 
@@ -181,6 +183,9 @@ func (e *StatementExecutor) ExecuteStatement(stmt influxql.Statement, ctx *influ
 			messages = append(messages, influxql.ReadOnlyWarning(stmt.String()))
 		}
 		err = e.executeSetPasswordUserStatement(stmt)
+	case *influxql.ShowQueriesStatement, *influxql.KillQueryStatement:
+		// Send query related statements to the task manager.
+		return e.TaskManager.ExecuteStatement(stmt, ctx)
 	default:
 		return influxql.ErrInvalidQuery
 	}
