@@ -27,3 +27,23 @@ func (*anonymousUser) IsAdmin() bool {
 func (*anonymousUser) Authorize(privilege Privilege, database string) bool {
 	return true
 }
+
+func ActAsAdmin(user UserInfo) UserInfo {
+	return sudoUser{UserInfo: user}
+}
+
+type sudoUser struct {
+	UserInfo
+}
+
+func (u sudoUser) Name() string {
+	return u.UserInfo.Name()
+}
+
+func (sudoUser) IsAdmin() bool {
+	return true
+}
+
+func (sudoUser) Authorize(privilege Privilege, database string) bool {
+	return true
+}
