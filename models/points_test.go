@@ -896,10 +896,15 @@ func TestParsePointWithTags(t *testing.T) {
 			models.Fields{"value": 1.0}, time.Unix(1, 0)))
 }
 
-func TestParsPointWithDuplicateTags(t *testing.T) {
-	_, err := models.ParsePoints([]byte(`cpu,host=serverA,host=serverB value=1i 1000000000`))
-	if err == nil {
-		t.Fatalf(`ParsePoint() expected error. got nil`)
+func TestParsePointWithDuplicateTags(t *testing.T) {
+	for i, line := range []string{
+		`cpu,host=serverA,host=serverB value=1i 1000000000`,
+		`cpu,b=2,b=1,c=3`,
+	} {
+		_, err := models.ParsePointsString(line)
+		if err == nil {
+			t.Fatalf("%d. ParsePoint() expected error. got nil", i)
+		}
 	}
 }
 
