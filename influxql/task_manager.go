@@ -48,10 +48,10 @@ func NewTaskManager() *TaskManager {
 	}
 }
 
-func (t *TaskManager) ExecuteStatement(stmt Statement, ctx *ExecutionContext) error {
+func (t *TaskManager) ExecuteStatement(stmt Statement, ctx ExecutionContext) error {
 	switch stmt := stmt.(type) {
 	case *ShowQueriesStatement:
-		rows, err := t.executeShowQueriesStatement(stmt, ctx)
+		rows, err := t.executeShowQueriesStatement(stmt, &ctx)
 		if err != nil {
 			return err
 		}
@@ -66,7 +66,7 @@ func (t *TaskManager) ExecuteStatement(stmt Statement, ctx *ExecutionContext) er
 			messages = append(messages, ReadOnlyWarning(stmt.String()))
 		}
 
-		if err := t.executeKillQueryStatement(stmt, ctx); err != nil {
+		if err := t.executeKillQueryStatement(stmt, &ctx); err != nil {
 			return err
 		}
 		ctx.Results <- &Result{

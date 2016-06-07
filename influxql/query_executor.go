@@ -96,7 +96,7 @@ type ExecutionContext struct {
 type StatementExecutor interface {
 	// ExecuteStatement executes a statement. Results should be sent to the
 	// results channel in the ExecutionContext.
-	ExecuteStatement(stmt Statement, ctx *ExecutionContext) error
+	ExecuteStatement(stmt Statement, ctx ExecutionContext) error
 }
 
 // StatementNormalizer normalizes a statement before it is executed.
@@ -216,7 +216,7 @@ func (e *QueryExecutor) executeQuery(query *Query, opt ExecutionOptions, closing
 		e.Logger.Println(stmt.String())
 
 		// Send any other statements to the underlying statement executor.
-		err = e.StatementExecutor.ExecuteStatement(stmt, &ctx)
+		err = e.StatementExecutor.ExecuteStatement(stmt, ctx)
 		if err == ErrQueryInterrupted {
 			// Query was interrupted so retrieve the real interrupt error from
 			// the query task if there is one.
